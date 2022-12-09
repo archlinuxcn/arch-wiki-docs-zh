@@ -42,7 +42,7 @@ class Optimizer:
         """ remove elements useless in offline browsing
         """
 
-        for e in root.cssselect("#archnavbar, #mw-page-base, #mw-head-base, #mw-navigation, nav"):
+        for e in root.cssselect("#archnavbar, #mw-page-base, #mw-head-base, #mw-navigation, nav, .mw-editsection"):
             e.getparent().remove(e)
 
         # strip comments (including IE 6/7 fixes, which are useless for an Arch package)
