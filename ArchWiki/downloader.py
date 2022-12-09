@@ -28,9 +28,7 @@ class Downloader:
         "continue": "",
     }
 
-    css_links = {
-        "https://wiki.archlinuxcn.org/wzh/load.php?debug=false&lang=zh&modules=mediawiki.legacy.commonPrint,shared|mediawiki.sectionAnchor|mediawiki.skinning.interface|skins.vector.styles|skins.vector.styles.responsive|zzz.ext.archLinux.styles|site.styles&only=styles&skin=vector-2022": "ArchWikiOffline.css",
-    }
+    css_url = 'https://wiki.archlinuxcn.org/wzh/load.php?debug=false&lang=%s&modules=mediawiki.legacy.commonPrint,shared|mediawiki.sectionAnchor|mediawiki.skinning.interface|skins.vector.styles|skins.vector.styles.responsive|zzz.ext.archLinux.styles|site.styles&only=styles&skin=vector-2022'
 
     def __init__(self, wiki, output_directory, epoch, *, optimizer=None, variant='zh'):
         """ Parameters:
@@ -45,7 +43,9 @@ class Downloader:
         self.output_directory = output_directory
         self.epoch = epoch
         self.optimizer = optimizer
-        self.css_links = self.css_links.replace('lang=zh', f'lang={variant}')
+        self.css_links = {
+            self.css_url % variant: 'ArchWikiOffline.css',
+        }
         self.query_allpages = self.query_allpages.copy()
         self.query_allpages['variant'] = variant
 
