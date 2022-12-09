@@ -12,6 +12,7 @@ if __name__ == "__main__":
     aparser.add_argument("--output-directory", type=str, required=True, help="Path where the downloaded pages should be stored.")
     aparser.add_argument("--force", action="store_true", help="Ignore timestamp, always download the page from the wiki.")
     aparser.add_argument("--clean", action="store_true", help="Clean the output directory after downloading, useful for removing pages deleted/moved on the wiki. Warning: any unknown files found in the output directory will be deleted!")
+    aparser.add_argument("--variant", type=str, required=True, help="zh variant")
 
     args = aparser.parse_args()
 
@@ -25,7 +26,11 @@ if __name__ == "__main__":
     aw = ArchWiki.ArchWiki(user_agent=user_agent)
     optimizer = ArchWiki.Optimizer(aw, args.output_directory)
 
-    downloader = ArchWiki.Downloader(aw, args.output_directory, epoch, optimizer=optimizer)
+    downloader = ArchWiki.Downloader(
+        aw, args.output_directory, epoch,
+        optimizer=optimizer,
+        variant=args.variant,
+    )
     downloader.download_css()
     aw.print_namespaces()
     for ns in ["0", "4", "12", "14"]:

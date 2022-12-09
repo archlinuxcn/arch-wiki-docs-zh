@@ -15,6 +15,7 @@ class Downloader:
         "gapnamespace": "0",
         "prop": "info",
         "inprop": "url",
+        "variant": "zh",
         "continue": "",
     }
 
@@ -28,10 +29,10 @@ class Downloader:
     }
 
     css_links = {
-        "https://wiki.archlinuxcn.org/wzh/load.php?debug=false&lang=en&modules=mediawiki.legacy.commonPrint,shared|mediawiki.sectionAnchor|mediawiki.skinning.interface|skins.vector.styles|skins.vector.styles.responsive|zzz.ext.archLinux.styles&only=styles&skin=vector": "ArchWikiOffline.css",
+        "https://wiki.archlinuxcn.org/wzh/load.php?debug=false&lang=zh&modules=mediawiki.legacy.commonPrint,shared|mediawiki.sectionAnchor|mediawiki.skinning.interface|skins.vector.styles|skins.vector.styles.responsive|zzz.ext.archLinux.styles|site.styles&only=styles&skin=vector-2022": "ArchWikiOffline.css",
     }
 
-    def __init__(self, wiki, output_directory, epoch, *, optimizer=None):
+    def __init__(self, wiki, output_directory, epoch, *, optimizer=None, variant='zh'):
         """ Parameters:
             @wiki:          ArchWiki instance to work with
             @output_directory:  where to store the downloaded files
@@ -44,6 +45,9 @@ class Downloader:
         self.output_directory = output_directory
         self.epoch = epoch
         self.optimizer = optimizer
+        self.css_links = self.css_links.replace('lang=zh', f'lang={variant}')
+        self.query_allpages = self.query_allpages.copy()
+        self.query_allpages['variant'] = variant
 
         # ensure output directory always exists
         if not os.path.isdir(self.output_directory):

@@ -15,7 +15,7 @@ url = "https://wiki.archlinuxcn.org/wzh/api.php"
 
 class ArchWiki(MediaWiki):
 
-    def __init__(self, **kwargs):
+    def __init__(self, variant, **kwargs):
         """ Parameters:
             + all keyword arguments of simplemediawiki.MediaWiki
         """
@@ -23,6 +23,7 @@ class ArchWiki(MediaWiki):
 
         self._namespaces = None
         self._redirects = None
+        self.variant = variant
 
     def query_continue(self, query):
         """ Generator for MediaWiki's query-continue feature.
@@ -98,7 +99,7 @@ class ArchWiki(MediaWiki):
 
         path = pattern.format(
             base=basepath,
-            langsubtag='zh-hans',
+            langsubtag=self.variant,
             namespace=namespace,
             title=title,
             ext="html"
