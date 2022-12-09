@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/python3
 
 import datetime
 import sys
@@ -25,14 +25,9 @@ if __name__ == "__main__":
     group.add_argument("--force", action="store_true", help="Ignore timestamp, always download the page from the wiki.")
     group.add_argument("--clean", action="store_true", help="Clean the output directory after downloading, useful for removing pages deleted/moved on the wiki. Warning: any unknown files found in the output directory will be deleted!")
     group.add_argument("--safe-filenames", action="store_true", help="Force using ASCII file names instead of the default Unicode.")
-    group.add_argument("--langs", type=str, nargs='+', help="Download only pages in these languages (specified by language tags)")
-    group.add_argument("--list-langs", action="store_true", help="List supported languages")
+    group.add_argument("--variant", type=str, required=True, help="zh variant")
 
     args = ws.config.parse_args(argparser)
-    if args.list_langs:
-        for tag in lang.get_language_tags():
-            print(tag, lang.english_for_tag(tag))
-        sys.exit()
 
     if args.force:
         epoch = datetime.datetime.now(datetime.UTC)
@@ -40,10 +35,11 @@ if __name__ == "__main__":
         # this should be the date of the latest incompatible change
         epoch = datetime.datetime(2026, 1, 2, 0, 0, 0, tzinfo=datetime.UTC)
 
+    sys.stdout.reconfigure(line_buffering=True)
     api = API.from_argparser(args)
-    optimizer = ArchWiki.Optimizer(api, args.output_directory, args.safe_filenames, args.langs)
+    optimizer = ArchWiki.Optimizer(api, args.output_directory, args.safe_filenames, variant=args.variant)
 
-    downloader = ArchWiki.Downloader(api, args.output_directory, epoch, optimizer=optimizer)
+    downloader = ArchWiki.Downloader(api, args.output_directory, epoch, optimizer=optimizer, variant=args.variant)
     downloader.download_css()
     print_namespaces(api)
     for ns in ["0", "4", "12", "14"]:

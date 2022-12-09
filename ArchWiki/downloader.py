@@ -7,9 +7,7 @@ from .optimizer import Optimizer
 
 
 class Downloader:
-    css_links = {
-        "https://wiki.archlinux.org/load.php?lang=en&modules=site.styles|skins.vector.icons,styles|zzz.ext.archLinux.styles&only=styles&skin=vector-2022": "ArchWikiOffline.css",
-    }
+    css_url = "https://wiki.archlinuxcn.org/wzh/load.php?lang=%s&modules=site.styles|skins.vector.icons,styles|zzz.ext.archLinux.styles|ext.gadget.heading-counter&only=styles&skin=vector-2022"
 
     def __init__(
         self,
@@ -17,6 +15,7 @@ class Downloader:
         output_directory: str,
         epoch: datetime.datetime,
         optimizer: Optimizer,
+        variant = 'zh',
     ):
         """
         Parameters:
@@ -31,6 +30,10 @@ class Downloader:
         self.output_directory = output_directory
         self.epoch = epoch
         self.optimizer = optimizer
+        self.variant = variant
+        self.css_links = {
+            self.css_url % variant: 'ArchWikiOffline.css',
+        }
 
         # ensure output directory always exists
         if not os.path.isdir(self.output_directory):
@@ -65,6 +68,7 @@ class Downloader:
             gapnamespace=namespace,
             prop="info",
             inprop="url",
+            variant=self.variant,
         )
         for page in allpages:
             title = page["title"]
@@ -76,7 +80,7 @@ class Downloader:
             timestamp = page["touched"]
             if self.needs_update(fname, timestamp):
                 print(f"  [downloading] {title}")
-                fullurl = page["fullurl"]
+                fullurl = page["fullurl"].replace('/wiki/', f'/{self.variant}/')
 
                 r = self.api.session.get(fullurl)
                 r.raise_for_status()

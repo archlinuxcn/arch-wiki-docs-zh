@@ -16,6 +16,7 @@ class Optimizer:
         base_directory: str,
         safe_filenames: bool = False,
         langs: list[str] | None = None,
+        variant = 'zh',
     ):
         """
         @api:            API object for ArchWiki
@@ -28,14 +29,15 @@ class Optimizer:
         self.base_directory = base_directory
         self.safe_filenames = safe_filenames
         self.langs = langs or ws.ArchWiki.lang.get_language_tags()
+        self.variant = variant
 
     def get_local_filename(self, title: str, basepath: str) -> str | None:
         """Return file name where the given page should be stored, relative to 'basepath'."""
-        title, lang = ws.ArchWiki.lang.detect_language(title)
-        langsubtag = ws.ArchWiki.lang.tag_for_langname(lang)
+        # title, lang = ws.ArchWiki.lang.detect_language(title)
+        # langsubtag = ws.ArchWiki.lang.tag_for_langname(lang)
 
-        if langsubtag not in self.langs:
-            return None
+        # if langsubtag not in self.langs:
+        #     return None
 
         _title = self.api.Title(title)
 
@@ -71,7 +73,7 @@ class Optimizer:
 
         path = pattern.format(
             base=basepath,
-            langsubtag=langsubtag,
+            langsubtag=self.variant,
             namespace=namespace,
             title=title,
             ext="html",
@@ -107,7 +109,7 @@ class Optimizer:
         """remove elements useless in offline browsing"""
 
         for e in root.cssselect(
-            "#archnavbar, #mw-navigation, header.mw-header, .vector-sitenotice-container, .vector-page-toolbar, #p-lang-btn"
+            "#archnavbar, #mw-navigation, header.mw-header, .vector-sitenotice-container, .vector-page-toolbar, #p-lang-btn, .mw-editsection"
         ):
             e.getparent().remove(e)
 
@@ -147,7 +149,7 @@ class Optimizer:
                 href = urllib.parse.unquote(href)
                 # matching full URL is necessary for interlanguage links
                 match = re.match(
-                    "^(https://wiki.archlinux.org)?/title/(?P<title>.+?)(?:#(?P<fragment>.+))?$",
+                    "^(https://wiki.archlinuxcn.org)?/wiki/(?P<title>.+?)(?:#(?P<fragment>.+))?$",
                     str(href),
                 )
                 if match:
@@ -173,7 +175,7 @@ class Optimizer:
 
         for i in root.cssselect("img"):
             src = i.get("src")
-            if src and src.startswith("/images/"):
+            if src and src.startswith("/wzh/images/"):
                 src = os.path.join(relbase, "File:" + os.path.split(src)[1])
                 i.set("src", src)
 
