@@ -14,7 +14,7 @@ class Downloader:
         "gapfilterredir": "nonredirects",
         "gapnamespace": "0",
         "prop": "info",
-        "inprop": "url|varianttitles",
+        "inprop": "url",
         "variant": "zh",
         "continue": "",
     }
@@ -85,7 +85,7 @@ class Downloader:
         query["gapnamespace"] = namespace
         for pages_snippet in self.wiki.query_continue(query):
             for page in sorted(pages_snippet["pages"].values(), key=lambda d: d["title"]):
-                title = page["varianttitles"][self.variant]
+                title = page["title"]
                 fname = self.wiki.get_local_filename(title, self.output_directory)
                 if not fname:
                     print(f"  [skipping] {title}")
