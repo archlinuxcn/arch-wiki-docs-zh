@@ -23,7 +23,7 @@ if __name__ == "__main__":
         epoch = datetime.datetime(2016, 3, 3, 18, 0, 0)
 
     user_agent = build_user_agent(__file__, ArchWiki.__version__, ArchWiki.__url__)
-    aw = ArchWiki.ArchWiki(user_agent=user_agent)
+    aw = ArchWiki.ArchWiki(user_agent=user_agent, variant=args.variant)
     optimizer = ArchWiki.Optimizer(aw, args.output_directory)
 
     downloader = ArchWiki.Downloader(
