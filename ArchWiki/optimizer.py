@@ -42,7 +42,7 @@ class Optimizer:
         """ remove elements useless in offline browsing
         """
 
-        for e in root.cssselect("#archnavbar, #mw-page-base, #mw-head-base, #mw-navigation"):
+        for e in root.cssselect("#archnavbar, #mw-page-base, #mw-head-base, #mw-navigation, nav"):
             e.getparent().remove(e)
 
         # strip comments (including IE 6/7 fixes, which are useless for an Arch package)
@@ -50,7 +50,7 @@ class Optimizer:
 
         # strip <script> tags
         lxml.etree.strip_elements(root, "script")
-        
+
         # strip <header> tags
         lxml.etree.strip_elements(root, "header")
 
@@ -85,7 +85,7 @@ class Optimizer:
             href = a.get("href")
             if href is not None:
                 href = urllib.parse.unquote(href)
-                match = re.match("^/title/(.+?)(?:#(.+))?$", str(href))
+                match = re.match("^/wiki/(.+?)(?:#(.+))?$", str(href))
                 if match:
                     title = self.wiki.resolve_redirect(match.group(1))
                     try:
@@ -104,7 +104,7 @@ class Optimizer:
 
         for i in root.cssselect("img"):
             src = i.get("src")
-            if src and src.startswith("/images/"):
+            if src and src.startswith("/wzh/images/"):
                 src = os.path.join(relbase, "File:" + os.path.split(src)[1])
                 i.set("src", src)
 
