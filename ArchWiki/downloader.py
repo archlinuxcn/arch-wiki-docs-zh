@@ -14,7 +14,7 @@ class Downloader:
         "gapfilterredir": "nonredirects",
         "gapnamespace": "0",
         "prop": "info",
-        "inprop": "url",
+        "inprop": "url|varianttitles",
         "variant": "zh",
         "continue": "",
     }
@@ -43,6 +43,7 @@ class Downloader:
         self.output_directory = output_directory
         self.epoch = epoch
         self.optimizer = optimizer
+        self.variant = variant
         self.css_links = {
             self.css_url % variant: 'ArchWikiOffline.css',
         }
@@ -84,7 +85,7 @@ class Downloader:
         query["gapnamespace"] = namespace
         for pages_snippet in self.wiki.query_continue(query):
             for page in sorted(pages_snippet["pages"].values(), key=lambda d: d["title"]):
-                title = page["title"]
+                title = page["varianttitles"][self.variant]
                 fname = self.wiki.get_local_filename(title, self.output_directory)
                 if not fname:
                     print(f"  [skipping] {title}")
@@ -93,7 +94,7 @@ class Downloader:
                 timestamp = self.wiki.parse_date(page["touched"])
                 if self.needs_update(fname, timestamp):
                     print(f"  [downloading] {title}")
-                    fullurl = page["fullurl"]
+                    fullurl = page["fullurl"].replace('/wiki/', f'/{self.variant}/')
 
                     r = self.session.get(fullurl)
                     if self.optimizer is not None:
